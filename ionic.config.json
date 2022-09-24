@@ -1,0 +1,7 @@
+{
+  "name": "OhmEng Voting",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
