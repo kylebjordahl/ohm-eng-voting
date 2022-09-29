@@ -1,6 +1,8 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import {GunProvider} from '@altrx/gundb-react-auth'
+
 import Home from './pages/Home';
 import ViewMessage from './pages/ViewMessage';
 
@@ -22,11 +24,14 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { GunContext } from './db/gun.context';
+import { AddProject } from './pages/AddProject';
 
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
+    <GunContext>
     <IonReactRouter>
       <IonRouterOutlet>
         <Route path="/" exact={true}>
@@ -35,11 +40,15 @@ const App: React.FC = () => (
         <Route path="/home" exact={true}>
           <Home />
         </Route>
-        <Route path="/message/:id">
+        <Route path="/project/:id">
            <ViewMessage />
+        </Route>
+        <Route path="/project/create">
+            <AddProject />
         </Route>
       </IonRouterOutlet>
     </IonReactRouter>
+    </GunContext>
   </IonApp>
 );
 
