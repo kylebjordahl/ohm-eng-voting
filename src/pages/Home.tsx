@@ -2,6 +2,7 @@ import React from "react";
 import ProjectListItem from "../components/ProjectListItem";
 import {
   IonButtons,
+  IonChip,
   IonContent,
   IonFab,
   IonFabButton,
@@ -11,6 +12,7 @@ import {
   IonPage,
   IonRefresher,
   IonRefresherContent,
+  IonText,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
@@ -49,22 +51,29 @@ const Home: React.FC = () => {
   };
 
   const onFabClick = () => {
-    addToSet({
-      codename: `something ${Date.now()}`,
-      presenters: "kyle",
-      votes: {},
-    });
+    // addToSet({
+    //   codename: `something ${Date.now()}`,
+    //   presenters: "kyle",
+    //   votes: {},
+    // });
   };
 
   return (
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Projects</IonTitle>
-          <IonButtons slot="end">
-            Value: {valueVotes.remainingVotes} Infeas:{" "}
-            {infeasibilityVotes.remainingVotes}
-            <ProfileButton />
+          <IonTitle>Pitch It</IonTitle>
+          <IonButtons className="header-votes" slot="end">
+            <IonText className="tiny">Votes Remaining</IonText>
+            <div className="remaining-votes">
+              <IonChip color="success">
+                Value: {valueVotes.remainingVotes}
+              </IonChip>
+              <IonChip color="danger">
+                Infeas: {infeasibilityVotes.remainingVotes}
+              </IonChip>
+            </div>
+            {/* <ProfileButton /> */}
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -75,7 +84,7 @@ const Home: React.FC = () => {
 
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Inbox</IonTitle>
+            <IonTitle size="large">Pitch It</IonTitle>
           </IonToolbar>
         </IonHeader>
 
@@ -85,7 +94,7 @@ const Home: React.FC = () => {
           ))}
         </IonList>
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={onFabClick}>
+          <IonFabButton routerLink="/project/create">
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>

@@ -1,0 +1,10 @@
+.header-votes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tiny {
+  font-size: .6rem;
+}

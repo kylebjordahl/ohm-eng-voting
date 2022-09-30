@@ -26,28 +26,32 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import { GunContext } from './db/gun.context';
 import { AddProject } from './pages/AddProject';
+import { SettingsPage } from "./pages/Settings";
 
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
     <GunContext>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/" exact={true}>
-          <Redirect to="/home" />
-        </Route>
-        <Route path="/home" exact={true}>
-          <Home />
-        </Route>
-        <Route path="/project/:id">
-           <ViewMessage />
-        </Route>
-        <Route path="/project/create">
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route path="/" exact={true}>
+            <Redirect to="/home" />
+          </Route>
+          <Route path="/home" exact={true}>
+            <Home />
+          </Route>
+          <Route path="/project/:id">
+            <ViewMessage />
+          </Route>
+          <Route path="/project/create">
             <AddProject />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
+          </Route>
+          <Route path="/secret/settings">
+            <SettingsPage />
+          </Route>
+        </IonRouterOutlet>
+      </IonReactRouter>
     </GunContext>
   </IonApp>
 );

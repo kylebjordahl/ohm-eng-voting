@@ -46,10 +46,9 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({}) => {
       {isLoggedIn ? (
         <>
           <IonButton aria-label="Edit profile" id="open-modal">
-            {profile.name ?? "Edit Profile"}&nbsp;
             <IonIcon icon={person}></IonIcon>
           </IonButton>
-          <IonModal ref={modal} trigger="open-modal">
+          {/* <IonModal ref={modal} trigger="open-modal">
             <IonHeader>
               <IonToolbar>
                 <IonButtons slot="start">
@@ -77,7 +76,7 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({}) => {
                 />
               </IonItem>
             </IonContent>
-          </IonModal>
+          </IonModal> */}
         </>
       ) : (
         <IonButton aria-label="Log in" onClick={() => login()}>

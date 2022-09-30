@@ -9,6 +9,10 @@ import { useVotes } from "./votes";
 export interface Project extends IGunSchema {
   codename: string;
   presenters: string;
+  description: string;
+}
+
+interface ProjectExtended extends Project {
   votes: {
     [key: string]: number;
   };
@@ -31,7 +35,7 @@ export const useProjectVotes = (
   type: "value" | "infeasibility"
 ) => {
   const { gun, appKeys } = useTypedAuth();
-  const [votes, setVotes] = useState<number>(0);
+  const [allVotes, setVotes] = useState<number>(0);
 
   const { fields, put } = useGunState<Record<string, number>>(
     gun
@@ -80,7 +84,8 @@ export const useProjectVotes = (
   }, [fields, put, appKeys, userProjectVotes, userVotes.maxVotes]);
 
   return {
-    votes,
+    allVotes: allVotes ?? 0,
+    userVotes: userVotes.projectVotes[project.nodeID as string] ?? 0,
     upvote,
     downvote,
   };

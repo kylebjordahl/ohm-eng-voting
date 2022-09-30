@@ -52,7 +52,9 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => {
       // routerLink={`/project/${project.codename}`}
       detail={false}
     >
-      <div slot="start" className="dot dot-unread"></div>
+      <IonText className="number-rank ion-padding" slot="start">
+        <h1>{value.allVotes - infeasibility.allVotes}</h1>
+      </IonText>
       <IonLabel className="ion-text-wrap">
         <h2>
           {project.codename}
@@ -60,31 +62,28 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => {
             <IonNote>{project.presenters}</IonNote>
           </span>
         </h2>
-        <h3>{project.codename}</h3>
-        <p>{JSON.stringify(project.votes)}</p>
+        <h3>{project.description}</h3>
+        <IonButtons slot="helper">
+          <IonChip color="success">
+            <IonButton onClick={() => value.downvote()}>
+              <IonIcon size="small" icon={removeCircleOutline} />
+            </IonButton>
+            <IonText class="number-counter">{value.userVotes}</IonText>
+            <IonButton onClick={() => value.upvote()}>
+              <IonIcon size="small" icon={addCircleOutline} />
+            </IonButton>
+          </IonChip>
+          <IonChip color="danger">
+            <IonButton onClick={() => infeasibility.downvote()}>
+              <IonIcon size="small" icon={removeCircleOutline} />
+            </IonButton>
+            <IonText class="number-counter">{infeasibility.userVotes}</IonText>
+            <IonButton onClick={() => infeasibility.upvote()}>
+              <IonIcon size="small" icon={addCircleOutline} />
+            </IonButton>
+          </IonChip>
+        </IonButtons>
       </IonLabel>
-      <IonButtons slot="end">
-        <IonChip>
-          Value
-          <IonButton onClick={() => value.upvote()}>
-            <IonIcon size="small" icon={addCircleOutline} />
-          </IonButton>
-          <IonText class="number-counter">{value.votes}</IonText>
-          <IonButton onClick={() => value.downvote()}>
-            <IonIcon size="small" icon={removeCircleOutline} />
-          </IonButton>
-        </IonChip>
-        <IonChip>
-          Infeasibility
-          <IonButton onClick={() => infeasibility.upvote()}>
-            <IonIcon size="small" icon={addCircleOutline} />
-          </IonButton>
-          <IonText class="number-counter">{infeasibility.votes}</IonText>
-          <IonButton onClick={() => infeasibility.downvote()}>
-            <IonIcon size="small" icon={removeCircleOutline} />
-          </IonButton>
-        </IonChip>
-      </IonButtons>
     </IonItem>
   );
 };

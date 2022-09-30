@@ -3,7 +3,7 @@ import { reduce } from "ramda";
 import { useEffect, useState } from "react";
 import { useTypedAuth } from "../db/gun.context";
 
-export type VoteType = "value" | "infeasibility";
+export type VoteType = keyof AllowedVotes;
 
 export const useVotes = (type: VoteType) => {
   const { gun, appKeys } = useTypedAuth();
@@ -16,11 +16,9 @@ export const useVotes = (type: VoteType) => {
       .get(type)
   );
 
-  const allowedVotes = useGunState<Record<string, number>>(
-    gun.get("settings").get("allowedVotes")
-  );
+  const allowedVotes = useAllowedVotes();
 
-  const maxVotes = allowedVotes.fields[type];
+  const maxVotes = allowedVotes[type];
 
   const [votes, setVotes] = useState<number>(0);
 
@@ -37,6 +35,24 @@ export const useVotes = (type: VoteType) => {
     votes,
     projectVotes: voteData.fields,
     remainingVotes: (maxVotes ?? 0) - (votes ?? 0),
-    maxVotes,
+    maxVotes: maxVotes ?? 0,
+  };
+};
+
+export interface AllowedVotes {
+  value: number;
+  infeasibility: number;
+}
+
+export const useAllowedVotes = () => {
+  const { gun } = useTypedAuth();
+
+  const allowedVotes = useGunState<Partial<AllowedVotes>>(
+    gun.get("settings").get("allowedVotes")
+  );
+
+  return {
+    ...allowedVotes.fields,
+    ...allowedVotes,
   };
 };
