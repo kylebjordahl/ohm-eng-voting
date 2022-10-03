@@ -13,77 +13,55 @@ import {
   IonTitle,
   IonToolbar,
   InputCustomEvent,
+  IonText,
+  IonTextarea,
+  IonChip,
 } from "@ionic/react";
-import { person, personAddOutline } from "ionicons/icons";
+import { person, close } from "ionicons/icons";
 import { useTypedAuth } from "../db/gun.context";
 import { useProfile } from "../data/user";
 
 export interface ProfileButtonProps {}
 
 export const ProfileButton: React.FC<ProfileButtonProps> = ({}) => {
-  const { login, isLoggedIn, appKeys } = useTypedAuth();
   const modal = useRef<HTMLIonModalElement>(null);
-  // const input = useRef<HTMLIonInputElement>(null);
+  const { appKeys } = useTypedAuth();
 
-  function confirm() {
-    login();
-    modal.current?.dismiss();
-  }
+  const { profile } = useProfile();
 
-  const { profile, put } = useProfile();
-  function onUpdateName(e: InputCustomEvent) {
-    console.log(appKeys);
-    const alias = String(e.detail.value);
-    const updated = {
-      ...profile,
-      name: alias,
-    };
-    put(updated);
-  }
+  console.log({ profile });
 
   return (
     <>
-      {isLoggedIn ? (
-        <>
-          <IonButton aria-label="Edit profile" id="open-modal">
-            <IonIcon icon={person}></IonIcon>
-          </IonButton>
-          {/* <IonModal ref={modal} trigger="open-modal">
-            <IonHeader>
-              <IonToolbar>
-                <IonButtons slot="start">
-                  <IonButton onClick={() => modal.current?.dismiss()}>
-                    Cancel
-                  </IonButton>
-                </IonButtons>
-                <IonTitle>Welcome</IonTitle>
-                <IonButtons slot="end">
-                  <IonButton strong={true} onClick={() => confirm()}>
-                    Confirm
-                  </IonButton>
-                </IonButtons>
-              </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-              <IonItem>
-                <IonLabel position="stacked">Enter your name</IonLabel>
-                <IonInput
-                  // ref={input}
-                  type="text"
-                  placeholder="Your name"
-                  value={profile.name ?? ""}
-                  onIonChange={onUpdateName}
-                />
-              </IonItem>
-            </IonContent>
-          </IonModal> */}
-        </>
-      ) : (
-        <IonButton aria-label="Log in" onClick={() => login()}>
-          Log In
-          <IonIcon icon={personAddOutline}></IonIcon>
-        </IonButton>
-      )}
+      <IonButton aria-label="Edit profile" id="open-modal">
+        <IonTitle size="small">{profile.name}</IonTitle>
+        <IonIcon icon={person}></IonIcon>
+      </IonButton>
+      <IonModal ref={modal} trigger="open-modal">
+        <IonHeader>
+          <IonToolbar>
+            <IonButtons slot="start">
+              <IonButton onClick={() => modal.current?.dismiss()}>
+                <IonIcon icon={close} />
+              </IonButton>
+            </IonButtons>
+            <IonTitle>Your Keys</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <IonItem>
+            <IonLabel class="ion-text-wrap">
+              <IonText>
+                If you want to move to a new browser, copy these keys and paste
+                them in the login screen on the new browser
+              </IonText>
+            </IonLabel>
+          </IonItem>
+          <IonItem>
+            <IonTextarea value={JSON.stringify(appKeys)}></IonTextarea>
+          </IonItem>
+        </IonContent>
+      </IonModal>
     </>
   );
 };

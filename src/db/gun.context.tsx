@@ -28,7 +28,8 @@ const storage = {
   removeItem: asyncFn(localStorage.removeItem.bind(localStorage)),
 };
 
-const peers: string[] = ["https://ohm-eng-voting.herokuapp.com/gun"];
+const peers: string[] = ["http://localhost:8765/gun"] 
+// const peers: string[] = ["https://ohm-eng-voting.herokuapp.com/gun"];
 
 const GunContext: React.FC<{ children: any }> = ({ children }) => {
   return (

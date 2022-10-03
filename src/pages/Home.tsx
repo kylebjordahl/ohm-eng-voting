@@ -17,15 +17,14 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { add } from "ionicons/icons";
-import { IGun, GunUser, ISEA, IGunInstance } from "gun";
+import { IGun, GunUser, ISEA } from "gun";
 
 import "./Home.css";
 
 import { Project, useProjectsCollection } from "../data/projects";
-import { useAuth } from "@altrx/gundb-react-auth";
 import { ProfileButton } from "../components/ProfileButton";
-import { useTypedAuth } from "../db/gun.context";
 import { useVotes } from "../data/votes";
+import { useSettings } from "../data/settings";
 
 interface AuthHookPayload {
   gun: IGun;
@@ -39,10 +38,10 @@ interface AuthHookPayload {
 }
 
 const Home: React.FC = () => {
-  const { gun, appKeys } = useTypedAuth();
-  const { projects, addToSet, updateInSet } = useProjectsCollection();
+  const { projects } = useProjectsCollection();
   const valueVotes = useVotes("value");
   const infeasibilityVotes = useVotes("infeasibility");
+  const settings = useSettings();
 
   const refresh = (e: CustomEvent) => {
     setTimeout(() => {
@@ -50,30 +49,26 @@ const Home: React.FC = () => {
     }, 3000);
   };
 
-  const onFabClick = () => {
-    // addToSet({
-    //   codename: `something ${Date.now()}`,
-    //   presenters: "kyle",
-    //   votes: {},
-    // });
-  };
+  // TODO: sort projects
 
   return (
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Pitch It</IonTitle>
-          <IonButtons className="header-votes" slot="end">
-            <IonText className="tiny">Votes Remaining</IonText>
-            <div className="remaining-votes">
-              <IonChip color="success">
-                Value: {valueVotes.remainingVotes}
-              </IonChip>
-              <IonChip color="danger">
-                Infeas: {infeasibilityVotes.remainingVotes}
-              </IonChip>
+          <IonTitle size="small">Pitch It</IonTitle>
+          <IonButtons className="" slot="end">
+            <div className="header-votes">
+              <IonText className="tiny">Votes Remaining</IonText>
+              <div className="remaining-votes">
+                <IonChip color="success">
+                  Value: {valueVotes.remainingVotes}
+                </IonChip>
+                <IonChip color="danger">
+                  Infeas: {infeasibilityVotes.remainingVotes}
+                </IonChip>
+              </div>
             </div>
-            {/* <ProfileButton /> */}
+            <ProfileButton />
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -82,22 +77,26 @@ const Home: React.FC = () => {
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
 
-        <IonHeader collapse="condense">
+        {/* <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Pitch It</IonTitle>
           </IonToolbar>
-        </IonHeader>
+        </IonHeader> */}
 
         <IonList>
           {([...(projects?.values() ?? [])] as Project[]).map((p) => (
             <ProjectListItem project={p} key={String(p.nodeID)} />
           ))}
         </IonList>
-        <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton routerLink="/project/create">
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
+        {settings.state.allowAddProjects ? (
+          <>
+            <IonFab vertical="bottom" horizontal="end" slot="fixed">
+              <IonFabButton routerLink="/project/create">
+                <IonIcon icon={add} />
+              </IonFabButton>
+            </IonFab>
+          </>
+        ) : null}
       </IonContent>
     </IonPage>
   );

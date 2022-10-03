@@ -12,10 +12,13 @@ export interface Project extends IGunSchema {
   description: string;
 }
 
-interface ProjectExtended extends Project {
+export interface ProjectNode extends Project {
+  nodeID: string;
   votes: {
     [key: string]: number;
   };
+  valueVotes: number;
+  infeasibilityVotes: number;
 }
 
 export const useProjectsCollection = () => {
@@ -36,8 +39,11 @@ export const useProjectVotes = (
 ) => {
   const { gun, appKeys } = useTypedAuth();
   const [allVotes, setVotes] = useState<number>(0);
+  const projectNodeData = useProject(project.nodeID as string);
 
-  const { fields, put } = useGunState<Record<string, number>>(
+  const { fields: projectVotes, put: putProjectVotes } = useGunState<
+    Record<string, number>
+  >(
     gun
       .get(project.nodeID as string)
       .get("votes")
@@ -59,34 +65,60 @@ export const useProjectVotes = (
     const voteTotal = reduce(
       (total, votes) => (typeof votes == "number" ? total + votes : total),
       0,
-      Object.values(fields)
+      Object.values(projectVotes)
     );
     setVotes(voteTotal);
-  }, [fields]);
+    projectNodeData.put({ [`${type}Votes`]: voteTotal } as any);
+  }, [projectVotes]);
 
   const upvote = useCallback(() => {
     if (userVotes.remainingVotes > 0) {
-      const currentVote = fields[appKeys.pub] ?? 0;
-      put({ [appKeys.pub]: currentVote + 1 });
+      const currentVote = projectVotes[appKeys.pub] ?? 0;
+      putProjectVotes({ [appKeys.pub]: currentVote + 1 });
       userProjectVotes.put(currentVote + 1);
     }
-  }, [fields, put, appKeys, userVotes.remainingVotes, userProjectVotes]);
+  }, [
+    projectVotes,
+    putProjectVotes,
+    appKeys,
+    userVotes.remainingVotes,
+    userProjectVotes,
+  ]);
 
   const downvote = useCallback(() => {
-    const currentVote = fields[appKeys.pub] ?? 0;
+    const currentVote = projectVotes[appKeys.pub] ?? 0;
     if (currentVote > 0) {
-      put({ [appKeys.pub]: currentVote - 1 });
+      putProjectVotes({ [appKeys.pub]: currentVote - 1 });
       // return a user vote
       if (currentVote < userVotes.maxVotes) {
         userProjectVotes.put(currentVote - 1);
       }
     }
-  }, [fields, put, appKeys, userProjectVotes, userVotes.maxVotes]);
+  }, [
+    projectVotes,
+    putProjectVotes,
+    appKeys,
+    userProjectVotes,
+    userVotes.maxVotes,
+  ]);
 
   return {
     allVotes: allVotes ?? 0,
     userVotes: userVotes.projectVotes[project.nodeID as string] ?? 0,
     upvote,
     downvote,
+  };
+};
+
+export const useProject = (nodeID: string) => {
+  const { gun } = useAuth();
+
+  const { fields: project, ...state } = useGunState<Project | ProjectNode>(
+    gun.get(nodeID)
+  );
+
+  return {
+    project,
+    ...state,
   };
 };

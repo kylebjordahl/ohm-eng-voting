@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IonButton,
   IonButtons,
@@ -17,27 +17,37 @@ import {
   IonToolbar,
   useIonToast,
 } from "@ionic/react";
-import { Project, useProjectsCollection } from "../data/projects";
-import { add, arrowBack } from "ionicons/icons";
-import { useHistory } from "react-router";
+import { Project, useProject, useProjectsCollection } from "../data/projects";
+import { save, arrowBack } from "ionicons/icons";
+import { useHistory, useParams } from "react-router";
 import { BackButton } from "../components/BackButton";
 
 type NewProject = Pick<Project, "codename" | "presenters" | "description">;
-export const AddProject = () => {
-  const [formState, setFormState] = useState<Partial<NewProject>>({});
+
+export const EditProject: React.FC = () => {
+  const params = useParams<{ id: string }>();
+  const { project, put } = useProject(params.id);
 
   const fieldSetterFactory = (field: keyof NewProject) => (e: CustomEvent) => {
     setFormState((state) => ({ ...state, [field]: e.detail.value }));
   };
 
-  const { addToSet } = useProjectsCollection();
+  const [formState, setFormState] = useState<Partial<Project>>({});
+  useEffect(() => {
+    setFormState({
+      codename: project.codename,
+      presenters: project.presenters,
+      description: project.description,
+    });
+  }, [project]);
+
   const [presentToast] = useIonToast();
   const history = useHistory();
 
   const onFabClick = () => {
-    addToSet(formState as Project);
+    put(formState as Project);
     presentToast({
-      message: `Added ${formState.codename}!`,
+      message: `Edited ${formState.codename}!`,
       position: "bottom",
       duration: 1000,
       color: "success",
@@ -47,17 +57,20 @@ export const AddProject = () => {
   };
 
   return (
-    <IonPage id="add-project-page">
+    <IonPage id="edit-project-page">
       <IonHeader>
         <IonToolbar>
           <BackButton />
-          <IonTitle>Create Project</IonTitle>
+          <IonTitle>Edit Project</IonTitle>
+          <IonButtons slot="end" class="ion-padding-end">
+            <IonButton onClick={onFabClick}>Save</IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Create Project</IonTitle>
+            <IonTitle size="large">Edit Project</IonTitle>
           </IonToolbar>
         </IonHeader>
 
@@ -84,11 +97,6 @@ export const AddProject = () => {
             ></IonTextarea>
           </IonItem>
         </IonList>
-        <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={onFabClick}>
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
       </IonContent>
     </IonPage>
   );

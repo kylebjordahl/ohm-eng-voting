@@ -1,5 +1,5 @@
 import { useGunCollectionState, useGunState } from "@altrx/gundb-react-hooks";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTypedAuth } from "../db/gun.context";
 
 export interface Profile {
@@ -8,7 +8,7 @@ export interface Profile {
 }
 
 export const useProfile = () => {
-  const { gun, appKeys } = useTypedAuth();
+  const { gun, appKeys, isLoggedIn } = useTypedAuth();
 
   const state = useGunState<Profile>(
     gun
@@ -17,8 +17,19 @@ export const useProfile = () => {
       .get("profile")
   );
 
+  (window as any).gun = gun;
+
+  const [nameToSet, setNameToSet] = useState<string>();
+
+  useEffect(() => {
+    if (nameToSet && !state.fields.name) {
+      state.put({ name: nameToSet } as Profile);
+    }
+  }, [isLoggedIn, nameToSet]);
+
   return {
     profile: state.fields,
+    setNameOnLogin: setNameToSet,
     ...state,
   };
 };

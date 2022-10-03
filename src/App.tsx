@@ -24,36 +24,53 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import { GunContext } from './db/gun.context';
-import { AddProject } from './pages/AddProject';
+import { GunContext, useTypedAuth } from "./db/gun.context";
+import { AddProject } from "./pages/AddProject";
+import { LoginPage } from "./pages/Login";
 import { SettingsPage } from "./pages/Settings";
+import { EditProject } from "./pages/EditProject";
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <GunContext>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route path="/" exact={true}>
-            <Redirect to="/home" />
-          </Route>
-          <Route path="/home" exact={true}>
-            <Home />
-          </Route>
-          <Route path="/project/:id">
-            <ViewMessage />
-          </Route>
-          <Route path="/project/create">
-            <AddProject />
-          </Route>
-          <Route path="/secret/settings">
-            <SettingsPage />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </GunContext>
-  </IonApp>
-);
+const App = () => {
+  return (
+    <IonApp>
+      <GunContext>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Routes />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </GunContext>
+    </IonApp>
+  );
+};
+
+const Routes: React.FC = () => {
+  const auth = useTypedAuth();
+  const isLoggedIn = auth.isLoggedIn;
+  console.log({ isLoggedIn });
+  return isLoggedIn ? (
+    <>
+      <Route path="/" exact={true}>
+        <Redirect to="/home" />
+      </Route>
+      <Route path="/home" exact={true}>
+        <Home />
+      </Route>
+      <Route path="/project/:id">
+        <EditProject />
+      </Route>
+      <Route path="/project/create">
+        <AddProject />
+      </Route>
+      <Route path="/secret/settings" exact={true}>
+        <SettingsPage />
+      </Route>
+    </>
+  ) : (
+    <LoginPage />
+  );
+};
 
 export default App;

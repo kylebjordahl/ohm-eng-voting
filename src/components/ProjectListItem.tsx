@@ -8,24 +8,20 @@ import { useGunCollectionState, useGunState } from "@altrx/gundb-react-hooks";
 import {
   IonButton,
   IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
   IonChip,
   IonIcon,
   IonItem,
   IonLabel,
   IonNote,
   IonText,
-  useIonViewWillEnter,
+  IonPopover,
 } from "@ionic/react";
 import {
   thumbsUp,
   cash,
   addCircleOutline,
   removeCircleOutline,
+  pencil,
 } from "ionicons/icons";
 import { Project, useProjectVotes } from "../data/projects";
 import { useTypedAuth } from "../db/gun.context";
@@ -52,17 +48,17 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => {
       // routerLink={`/project/${project.codename}`}
       detail={false}
     >
-      <IonText className="number-rank ion-padding" slot="start">
+      <IonText className="number-rank ion-padding-start" slot="start">
         <h1>{value.allVotes - infeasibility.allVotes}</h1>
       </IonText>
       <IonLabel className="ion-text-wrap">
         <h2>
-          {project.codename}
-          <span className="date">
+          <span className="codename">{project.codename}</span>
+          <span className="presenter">
             <IonNote>{project.presenters}</IonNote>
           </span>
         </h2>
-        <h3>{project.description}</h3>
+        <p>{project.description}</p>
         <IonButtons slot="helper">
           <IonChip color="success">
             <IonButton onClick={() => value.downvote()}>
@@ -84,6 +80,11 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => {
           </IonChip>
         </IonButtons>
       </IonLabel>
+      <IonButtons slot="end">
+        <IonButton routerLink={`/project/${project.nodeID as string}`}>
+          <IonIcon icon={pencil} />
+        </IonButton>
+      </IonButtons>
     </IonItem>
   );
 };
