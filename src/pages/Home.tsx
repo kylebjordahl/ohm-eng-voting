@@ -21,10 +21,16 @@ import { IGun, GunUser, ISEA } from "gun";
 
 import "./Home.css";
 
-import { Project, useProjectsCollection } from "../data/projects";
+import {
+  Project,
+  ProjectNode,
+  useProjectsCollection,
+  useProjectVotes,
+} from "../data/projects";
 import { ProfileButton } from "../components/ProfileButton";
 import { useVotes } from "../data/votes";
 import { useSettings } from "../data/settings";
+import { project } from "ramda";
 
 interface AuthHookPayload {
   gun: IGun;
@@ -103,3 +109,48 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+export const Results = () => {
+  const projects = useProjectsCollection();
+
+  const keys: (keyof ProjectNode)[] = [
+    "codename",
+    "description",
+    "presenters",
+    "valueVotes",
+    "infeasibilityVotes",
+    "totalVotes",
+  ];
+
+  const projectList = [...(projects.projects?.values() ?? [])];
+
+  const values = ([...(projects.projects?.values() ?? [])] as ProjectNode[])
+    .map((p) => {
+      return { ...p, totalVotes: p.valueVotes - p.infeasibilityVotes };
+    })
+    .map((p) => keys.map((k) => p[k as keyof typeof p]));
+
+  const csv = [keys.join(","), ...values.map((v) => v.join(","))].join("\n");
+
+  return (
+    <pre>
+      {keys.join(",") + "\n"}
+      {projectList.map((p) => (
+        <ResultRow project={p}></ResultRow>
+      ))}
+    </pre>
+  );
+};
+
+export const ResultRow = ({ project }: any) => {
+  const value = useProjectVotes(project, "value");
+  const infeasibility = useProjectVotes(project, "infeasibility");
+
+  const str = `${project.codename},${project.description},"${
+    project.presenters
+  }",${value.allVotes}, ${infeasibility.allVotes},${
+    value.allVotes - infeasibility.allVotes
+  }`;
+
+  return <pre>{str}</pre>;
+};

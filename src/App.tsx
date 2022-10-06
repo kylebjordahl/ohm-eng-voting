@@ -3,7 +3,7 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import {GunProvider} from '@altrx/gundb-react-auth'
 
-import Home from './pages/Home';
+import Home, { Results } from "./pages/Home";
 import ViewMessage from './pages/ViewMessage';
 
 /* Core CSS required for Ionic components to work properly */
@@ -28,7 +28,7 @@ import { GunContext, useTypedAuth } from "./db/gun.context";
 import { AddProject } from "./pages/AddProject";
 import { LoginPage } from "./pages/Login";
 import { SettingsPage } from "./pages/Settings";
-import { EditProject } from "./pages/EditProject";
+import { DeleteProject, EditProject } from "./pages/EditProject";
 
 setupIonicReact();
 
@@ -58,6 +58,9 @@ const Routes: React.FC = () => {
       <Route path="/home" exact={true}>
         <Home />
       </Route>
+      <Route path="/project/:id/delete" exact={true}>
+        <DeleteProject />
+      </Route>
       <Route path="/project/:id">
         <EditProject />
       </Route>
@@ -66,6 +69,9 @@ const Routes: React.FC = () => {
       </Route>
       <Route path="/secret/settings" exact={true}>
         <SettingsPage />
+      </Route>
+      <Route path="/secret/results" exact={true}>
+        <Results />
       </Route>
     </>
   ) : (

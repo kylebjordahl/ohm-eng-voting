@@ -19,7 +19,7 @@ import {
 } from "@ionic/react";
 import { Project, useProject, useProjectsCollection } from "../data/projects";
 import { save, arrowBack } from "ionicons/icons";
-import { useHistory, useParams } from "react-router";
+import { Redirect, useHistory, useParams } from "react-router";
 import { BackButton } from "../components/BackButton";
 
 type NewProject = Pick<Project, "codename" | "presenters" | "description">;
@@ -100,4 +100,20 @@ export const EditProject: React.FC = () => {
       </IonContent>
     </IonPage>
   );
+};
+
+export const DeleteProject = () => {
+  const params = useParams<{ id: string }>();
+  const projects = useProjectsCollection();
+  const project = projects.projects?.get(params.id);
+  projects.removeFromSet(params.id);
+
+  const [toaster] = useIonToast();
+  toaster({
+    message: `Deleted ${project?.codename}`,
+    color: "warning",
+    duration: 2000,
+    position: "top",
+  });
+  return <Redirect to="/home" />;
 };
